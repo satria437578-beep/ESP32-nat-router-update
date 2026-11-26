@@ -1,0 +1,37 @@
+name: Build ESP32 firmware
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'esp32_nat_router_ota_ttl_source.zip'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract source
+        run: unzip -q esp32_nat_router_ota_ttl_source.zip
+
+      - name: Build (ESP-IDF v5.5, target esp32)
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5
+          target: esp32
+          path: esp32_nat_router-master
+
+      - name: Check size fits the OTA slot (1536 KiB)
+        run: |
+          f=esp32_nat_router-master/build/esp32_nat_router.bin
+          ls -l "$f"
+          s=$(stat -c %s "$f")
+          echo "size=$s limit=1572864"
+          [ "$s" -lt 1572864 ]
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: esp32_nat_router_esp32
+          path: esp32_nat_router-master/build/esp32_nat_router.bin
