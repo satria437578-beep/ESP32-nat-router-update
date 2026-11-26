@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Extract source
         run: unzip -q esp32_nat_router_ota_ttl_source.zip
@@ -31,7 +31,7 @@ jobs:
           echo "size=$s limit=1572864"
           [ "$s" -lt 1572864 ]
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: esp32_nat_router_esp32
           path: esp32_nat_router-master/build/esp32_nat_router.bin
